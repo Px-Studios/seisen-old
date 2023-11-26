@@ -38,6 +38,8 @@ public class Seisen extends ApplicationAdapter {
 			batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			MainMenuScreen mainMenuScreen = new MainMenuScreen();
 			mainMenuScreen.show();
+			mainMenuScreen.render(0);
+			return;
 		}
 
 		batch.end();

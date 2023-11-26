@@ -1,0 +1,29 @@
+{
+  com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+    default: { font: rocketRegular, up: default-round, down: default-round-down },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+    default: { font: rocketRegular, fontColor: white },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+    default: { font: rocketRegular, fontColor: white, background: textfield },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+    default: { fontColorUnselected: white, fontColorSelected: red },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+    default: { vScroll: default-scroll, vScrollKnob: default-scroll-knob },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+    default: { checkboxOn: check-on, checkboxOff: check-off, font: rocketRegular },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+    default: { font: rocketRegular, fontColor: white, background: select-box, scrollStyle: default },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+    default: { titleFont: rocketRegular, titleFontColor: white },
+  },
+  com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+    default: { label: default, background: default-round-large },
+  }
+}

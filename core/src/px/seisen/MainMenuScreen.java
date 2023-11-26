@@ -1,99 +1,122 @@
 package px.seisen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import java.lang.invoke.MutableCallSite;
 
 public class MainMenuScreen implements Screen {
-    SpriteBatch batch;
+    private Stage stage;
+    private Table table;
+    private Skin skin;
+    private BitmapFont customFont;
+    private SpriteBatch batch;
+
+    public MainMenuScreen() {
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        Gdx.input.setInputProcessor(stage);
+
+        batch = new SpriteBatch();
+
+        // Load your custom font here
+        customFont = new BitmapFont();
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RcRocketRegular-0WVW9.otf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 24; // Specify the desired font size
+
+        BitmapFont rocketRegular = generator.generateFont(parameter);
+
+        generator.dispose(); // Dispose the generator when done
+
+        skin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
+
+        table = new Table();
+        table.setFillParent(true);
+
+        Music music = Gdx.audio.newMusic(Gdx.files.internal("audio/soundtrack.wav"));
+        music.setLooping(true);
+        music.setVolume(0.1f);
+        music.play();
+
+        // Create Start button
+        TextButton startButton = new TextButton("Start", skin);
+        startButton.getLabel().setFontScale(2.0f); // Adjust the font size
+        startButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Handle Start button click event here
+                System.out.println("Start button clicked");
+            }
+        });
+
+        // Create Exit button
+        TextButton exitButton = new TextButton("Exit", skin);
+        exitButton.getLabel().setFontScale(2.0f); // Adjust the font size
+        exitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit(); // Close the application
+            }
+        });
+
+        table.add(startButton).padBottom(20);
+        table.row();
+        table.add(exitButton);
+
+        stage.addActor(table);
+    }
 
     @Override
     public void show() {
-        batch = new SpriteBatch();
-
-        // we want to add two buttons: "Start Game" and "Exit"
-        // use font "fonts/RcRocketRegular-0WVW9.otf"
-        // use font size 48
-        // use color white
-        // use padding 10
-        // border in #FF8000
-        // background in black
-        // when the user clicks on "Start Game", switch to GameScreen
-        // when the user clicks on "Exit", exit the game
-        // center the buttons vertically and horizontally!
-
-        // create skin with font "fonts/RcRocketRegular-0WVW9.otf" and font size 48, colors are above
-
-        BitmapFont font = new BitmapFont();
-        font.getData().setScale(48);
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
-        TextButton startButton = new TextButton("Start Game", textButtonStyle);
-
-        startButton.setPosition(Gdx.graphics.getWidth() / 2 - startButton.getWidth() / 2, Gdx.graphics.getHeight() / 2 - startButton.getHeight() / 2);
     }
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
-        System.out.println("MainMenuScreen.render()");
-        ScreenUtils.clear(0, 0, 0, 1);
-        // add startButton to the stage:
-        // 1. get the stage from the skin
-        // 2. add the startButton to the stage
-        // 3. draw the stage
-
-        // 1:
-        Skin skin = new Skin();
-        skin.add("default", new TextButton.TextButtonStyle());
-        skin.getFont("default").getData().setScale(48);
-        skin.getFont("default").setColor(Color.WHITE);
-
-        // 2:
-        TextButton startButton = new TextButton("Start Game", skin);
-        startButton.setPosition(Gdx.graphics.getWidth() / 2 - startButton.getWidth() / 2, Gdx.graphics.getHeight() / 2 - startButton.getHeight() / 2);
-        startButton.draw(batch, 1);
-
-        // 3 add to SpriteBatch:
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center().center();
-
-        table.add(startButton).pad(10).row();
-
-        table.draw(batch, 1);
-
+        // You can draw other elements or backgrounds here if needed
         batch.end();
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
+        stage.dispose();
+        skin.dispose();
         batch.dispose();
+        customFont.dispose();
     }
 }
