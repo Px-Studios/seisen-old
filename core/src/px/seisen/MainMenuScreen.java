@@ -1,122 +1,119 @@
 package px.seisen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.lang.invoke.MutableCallSite;
+import java.io.Console;
 
 public class MainMenuScreen implements Screen {
+    final Seisen game;
     private Stage stage;
-    private Table table;
-    private Skin skin;
-    private BitmapFont customFont;
-    private SpriteBatch batch;
+    OrthographicCamera camera;
 
-    public MainMenuScreen() {
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        Gdx.input.setInputProcessor(stage);
+    public MainMenuScreen(final Seisen game) {
+        this.game = game;
 
-        batch = new SpriteBatch();
-
-        // Load your custom font here
-        customFont = new BitmapFont();
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/RcRocketRegular-0WVW9.otf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 24; // Specify the desired font size
-
-        BitmapFont rocketRegular = generator.generateFont(parameter);
-
-        generator.dispose(); // Dispose the generator when done
-
-        skin = new Skin(Gdx.files.internal("skin/metal-ui.json"));
-
-        table = new Table();
-        table.setFillParent(true);
-
-        Music music = Gdx.audio.newMusic(Gdx.files.internal("audio/soundtrack.wav"));
-        music.setLooping(true);
-        music.setVolume(0.1f);
-        music.play();
-
-        // Create Start button
-        TextButton startButton = new TextButton("Start", skin);
-        startButton.getLabel().setFontScale(2.0f); // Adjust the font size
-        startButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Handle Start button click event here
-                System.out.println("Start button clicked");
-            }
-        });
-
-        // Create Exit button
-        TextButton exitButton = new TextButton("Exit", skin);
-        exitButton.getLabel().setFontScale(2.0f); // Adjust the font size
-        exitButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit(); // Close the application
-            }
-        });
-
-        table.add(startButton).padBottom(20);
-        table.row();
-        table.add(exitButton);
-
-        stage.addActor(table);
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 480);
     }
 
     @Override
     public void show() {
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+
+        Table table = new Table();
+        table.setFillParent(true);
+        stage.addActor(table);
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        SpriteBatch batch = new SpriteBatch();
+        int midX = Gdx.graphics.getWidth() / 2;
+        int screenTop = Gdx.graphics.getHeight();
+        int screenRight = Gdx.graphics.getWidth();
+
+        Texture startTex = new Texture("buttons/start.png");
+        Texture helpTex = new Texture("buttons/help.png");
+        Texture quitTex = new Texture("buttons/quit.png");
+
+        int buttonWidth = startTex.getWidth();
+        int buttonHeight = startTex.getHeight();
+
+        int[] buttonTops = {screenTop - 200, screenTop - 400, screenTop - 600};
+        int[] buttonBottoms = {buttonTops[0] - buttonHeight, buttonTops[1] - buttonHeight, buttonTops[2] - buttonHeight};
+
+        int anyButtonLeft = midX - buttonWidth / 2;
+        int anyButtonRight = midX + buttonWidth / 2;
 
         batch.begin();
-        // You can draw other elements or backgrounds here if needed
+        for (int i = 0; i < 3; i++) {
+            batch.draw(i == 0 ? startTex : (i == 1 ? helpTex : quitTex), anyButtonLeft, buttonBottoms[i]);
+        }
         batch.end();
 
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
+        if (Gdx.input.isButtonJustPressed(0)) {
+            int x = screenRight - Gdx.input.getX();
+            int y = screenTop - Gdx.input.getY();
+
+            for (int i = 0; i < 3; i++) {
+                if (x >= anyButtonLeft && x <= anyButtonRight && y >= buttonBottoms[i] && y <= buttonTops[i]) {
+                    String buttonPressedName = i == 0 ? "start" : (i == 1 ? "help" : "quit");
+
+                    switch (buttonPressedName) {
+                        case "start":
+                            game.setScreen(new GameScreen(game));
+                            break;
+                        case "help":
+                            System.out.println("Help");
+                            break;
+                        case "quit":
+                            Gdx.app.exit();
+                            break;
+                    }
+
+                    dispose();
+                    break;
+                }
+            }
+        }
+
     }
 
     @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
+    public void resize(int i, int i1) {
+
     }
 
     @Override
     public void pause() {
+
     }
 
     @Override
     public void resume() {
+
     }
 
     @Override
     public void hide() {
+
     }
 
     @Override
     public void dispose() {
-        stage.dispose();
-        skin.dispose();
-        batch.dispose();
-        customFont.dispose();
+
     }
 }
