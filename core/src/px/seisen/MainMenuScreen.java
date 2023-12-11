@@ -18,14 +18,19 @@ import java.io.Console;
 
 public class MainMenuScreen implements Screen {
     final Seisen game;
-    private Stage stage;
+    Stage stage;
+    Texture backgroundTex, startTex, helpTex, quitTex;
+
     OrthographicCamera camera;
 
     public MainMenuScreen(final Seisen game) {
         this.game = game;
 
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        backgroundTex = new Texture("gui/bg.png");
+
+        startTex = new Texture("buttons/start.png");
+        helpTex = new Texture("buttons/help.png");
+        quitTex = new Texture("buttons/quit.png");
     }
 
     @Override
@@ -40,14 +45,9 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        SpriteBatch batch = new SpriteBatch();
         int midX = Gdx.graphics.getWidth() / 2;
         int screenTop = Gdx.graphics.getHeight();
         int screenRight = Gdx.graphics.getWidth();
-
-        Texture startTex = new Texture("buttons/start.png");
-        Texture helpTex = new Texture("buttons/help.png");
-        Texture quitTex = new Texture("buttons/quit.png");
 
         int buttonWidth = startTex.getWidth();
         int buttonHeight = startTex.getHeight();
@@ -58,11 +58,12 @@ public class MainMenuScreen implements Screen {
         int anyButtonLeft = midX - buttonWidth / 2;
         int anyButtonRight = midX + buttonWidth / 2;
 
-        batch.begin();
+        game.batch.begin();
+        game.batch.draw(backgroundTex, 0, 0);
         for (int i = 0; i < 3; i++) {
-            batch.draw(i == 0 ? startTex : (i == 1 ? helpTex : quitTex), anyButtonLeft, buttonBottoms[i]);
+            game.batch.draw(i == 0 ? startTex : (i == 1 ? helpTex : quitTex), anyButtonLeft, buttonBottoms[i]);
         }
-        batch.end();
+        game.batch.end();
 
         if (Gdx.input.isButtonJustPressed(0)) {
             int x = screenRight - Gdx.input.getX();
@@ -75,16 +76,16 @@ public class MainMenuScreen implements Screen {
                     switch (buttonPressedName) {
                         case "start":
                             game.setScreen(new GameScreen(game));
-                            break;
+                            dispose();
                         case "help":
                             System.out.println("Help");
                             break;
                         case "quit":
+                            System.out.println("Quit");
                             Gdx.app.exit();
                             break;
                     }
 
-                    dispose();
                     break;
                 }
             }
@@ -114,6 +115,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        this.stage.dispose();
     }
 }
