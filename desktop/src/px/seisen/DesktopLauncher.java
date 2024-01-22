@@ -7,8 +7,11 @@ public class DesktopLauncher {
 	public static void main(String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 
-		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
-		config.setForegroundFPS(24);
+		//config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
+		//set size to 800x480
+		config.setWindowedMode(800, 480);
+
+		config.setForegroundFPS(120);
 		config.setTitle("Seisen");
 		config.setIdleFPS(10);
 

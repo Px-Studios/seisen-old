@@ -8,12 +8,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import px.seisen.characters.Hitbox;
+
 public class GameScreen implements Screen {
     final Seisen game;
+    private final GameStage stage;
     OrthographicCamera camera;
     Texture backgroundTex, characterTex;
-    Rectangle characterRect;
-    Boolean isJumping;
+
+    Player player1, player2;
+
+    float deltaTime;
 
     public GameScreen(final Seisen game) {
         this.game = game;
@@ -21,16 +26,16 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
-        backgroundTex = new Texture("stages/sunrise.png");
+        stage = new GameStage("Sunrise", "sunrise");
+
+        backgroundTex = new Texture("stages/" + stage.stageId + ".png");
         characterTex = new Texture("characters/hitbox.png");
 
-        characterRect = new Rectangle();
-        characterRect.x = 300;
-        characterRect.y = 50;
-        characterRect.width = 50;
-        characterRect.height = 100;
+        Player player1 = new Player("Player 1", new Hitbox(), true);
+        Player player2 = new Player("Player 2", new Hitbox(), false);
 
-        isJumping = false;
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     @Override
@@ -46,32 +51,30 @@ public class GameScreen implements Screen {
 
         game.batch.begin();
 
-        game.font.draw(game.batch, "[Stage 1] Sunrise", 100, 150);
-
         game.batch.draw(backgroundTex, 0, 0, 800, 480);
-        game.batch.draw(characterTex, characterRect.x, characterRect.y, 100, 300);
+        game.batch.draw(characterTex, player1.x, player1.y);
+        game.batch.draw(characterTex, player2.x, player2.y);
+
+        game.font.draw(game.batch, "Seisen | Stage " + stage.stageName, 100, 150);
 
         game.batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
-            characterRect.x -= 400 * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-            characterRect.x += 400 * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.UP))
-            isJumping = true;
+        deltaTime = Gdx.graphics.getDeltaTime();
 
-        if (isJumping) {
-            characterRect.y += 200 * Gdx.graphics.getDeltaTime();
-            if (characterRect.y > 100) {
-                isJumping = false;
-                characterRect.y = 50;
-            }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            player1.moveLeft(delta);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player1.moveRight(delta);
         }
 
-		if (characterRect.x < 0)
-            characterRect.x = 0;
-		if (characterRect.x > 800 - characterRect.width)
-            characterRect.x = 800 - characterRect.width;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            player2.moveLeft(delta);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            player2.moveRight(delta);
+        }
     }
 
     @Override
