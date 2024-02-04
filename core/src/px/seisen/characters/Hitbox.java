@@ -4,7 +4,7 @@ public class Hitbox extends BaseCharacter {
     public Hitbox() {
         this.id = "hitbox";
         this.name = "Hitbox";
-        this.width = 300;
-        this.height = 600;
+        this.width = 100;
+        this.height = 200;
     }
 }

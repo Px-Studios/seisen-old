@@ -1,10 +1,10 @@
-package px.seisen;
+package px.seisen.stages;
 
-public class GameStage {
+public class BaseStage {
     public double startTimestamp;
     public String stageName, stageId;
 
-    public GameStage(String stageName, String stageId) {
+    public BaseStage(String stageName, String stageId) {
         this.startTimestamp = System.currentTimeMillis();
         this.stageName = stageName;
         this.stageId = stageId;

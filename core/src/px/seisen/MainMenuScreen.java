@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import px.seisen.stages.Sunrise;
 
 public class MainMenuScreen implements Screen {
     final Seisen game;
@@ -34,7 +35,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Handle start button click
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, new Sunrise()));
                 dispose();
             }
         });
